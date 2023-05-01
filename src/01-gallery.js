@@ -1,7 +1,10 @@
-import { galleryItems } from './gallery-items.js';
-// Change code below this line
+import SimpleLightbox from 'simplelightbox';
+import { galleryItems } from './gallery-items';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const galleryList = document.querySelector('.gallery');
+
+
 
 const markupGallery = galleryItems.map(({preview, original, description}) => `<li class="gallery__item">
   <a class="gallery__link" href="large-image.jpg">
@@ -16,21 +19,9 @@ const markupGallery = galleryItems.map(({preview, original, description}) => `<l
 
 galleryList.insertAdjacentHTML("afterbegin", markupGallery);
 
-galleryList.addEventListener('click', onTargetClickGalllery);
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
-function onTargetClickGalllery(event) {
-  event.preventDefault();
-  if (event.target.nodeName !== 'IMG') {
-      return;
-    }
-    const linkLargeImage = event.target.dataset.source;
-
-    const instance = basicLightbox.create(`
-    <img src="${linkLargeImage}" width="800" height="600">
-    `)
-
-    instance.show();
-
-};
-
-console.log(galleryItems);
+console.log(lightbox)
