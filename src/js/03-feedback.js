@@ -1,53 +1,47 @@
 import throttle from 'lodash.throttle';
 
 const LOCAL_STORAGE_KEY = 'feedback-form-state';
+const formData = {};
 
 const refs = {
   form: document.querySelector('.feedback-form'),
-  textarea: document.querySelector('textarea'),
-  input: document.querySelector('input'),
+  inputEmail: document.querySelector('input[name="email"]'),
+  inputTextarea: document.querySelector('textarea[name="message"]'),
 };
 
-
-let savedFormData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-
 refs.form.addEventListener('input', throttle(onFormInput, 500));
-populateFormData();
 refs.form.addEventListener('submit', onFormSubmit);
 
-function onFormInput(e) {
-  if (!savedFormData) {
-    const formData = {};
-    formData[e.target.name] = e.target.value;
-
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
-  } else {
-    const formData = { ...savedFormData };
-    formData[e.target.name] = e.target.value;
-
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
-  }
-}
+getItems();
 
 function onFormSubmit(e) {
   e.preventDefault();
-
-  try {
-    console.log(savedFormData);
-  } catch (error) {
-    console.log(error.name);
-    console.log(error.message);
+  
+  if (refs.inputEmail.value !== ''
+    && refs.inputTextarea.value !== '') {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    e.currentTarget.reset();
+    console.log(formData);
+    return;
   }
 
-  localStorage.removeItem(LOCAL_STORAGE_KEY);
-  savedFormData = '';
-
-  e.target.reset();
+    alert('Необхідно заповнити всі поля');  
 }
 
-function populateFormData() {
-  if (savedFormData) {
-    refs.input.value = savedFormData.email || '';
-    refs.textarea.value = savedFormData.message || '';
+function onFormInput() {
+  formData.email = refs.inputEmail.value;
+  formData.message = refs.inputTextarea.value;
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+}
+
+function getItems() {
+  try {
+    const saveItems = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (saveItems) {
+      refs.inputEmail.value = saveItems.email;
+      refs.inputTextarea.value = saveItems.message;
+    }
+  } catch (e) {
+    console.log(e.name); 
   }
 }
